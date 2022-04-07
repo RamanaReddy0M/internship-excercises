@@ -18,7 +18,7 @@ public class Range {
         Range.of(start, end).forEach(System.out::println);
     }
 
-    public static Stream<String> of(int start, int end) {
+    public static Stream<String> of(long start, long end) {
         List<String> result = new ArrayList<>();
         LongStream.range(start, end).forEach(i -> {
             if (isPrime(i))
