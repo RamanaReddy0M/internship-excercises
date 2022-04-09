@@ -7,6 +7,10 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        //plugin less than command
+        IntegerListFilter listFilter = new IntegerListFilter();
+        listFilter.registerBiPredicate("less than", (integer, less) -> integer < less);
+        //-------------------------------
         Scanner scanner = new Scanner(System.in);
         System.out.println("Input: ");
         System.out.print("Specify numbers separated by ',', ex: 1, 2, 3,.." + "\nlist: ");
@@ -22,7 +26,6 @@ public class Main {
         String[] commands = scanner.nextLine().split(",");
         //output
         System.out.println("Output: ");
-        ListFilter listFilter = new ListFilter();
         listFilter.withAnyCommand(list, Arrays.asList(commands)).forEach(System.out::println);
     }
 }
