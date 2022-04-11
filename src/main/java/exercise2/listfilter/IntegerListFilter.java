@@ -11,19 +11,19 @@ public class IntegerListFilter extends ListFilter<Integer> {
 
     public IntegerListFilter() {
         //even, odd, prime and odd requires single param to implement
-        registerPredicate("even", integer -> integer % 2 == 0);
-        registerPredicate("odd", predicateMap.get("even").negate());
-        registerPredicate("prime", num -> {
+        registerCommandAndPredicate("even", integer -> integer % 2 == 0);
+        registerCommandAndPredicate("odd", predicateMap.get("even").negate());
+        registerCommandAndPredicate("prime", num -> {
             if (num <= 1) return false;
             if (num == 2) return true;
             for (int i = 2; i <= num / 2; i++)
                 if (num % i == 0) return false;
             return true;
         });
-        registerPredicate("odd prime", predicateMap.get("odd").and(predicateMap.get("prime")));
+        registerCommandAndPredicate("odd prime", predicateMap.get("odd").and(predicateMap.get("prime")));
         //multiple of, greater than and less than requires 2 params to implement
-        registerBiPredicate("greater than", (num, greater) -> num > greater);
-        registerBiPredicate("multiple of", (num, multiple) -> num % multiple == 0);
+        registerCommandAndPredicate("greater than", (num, greater) -> num > greater);
+        registerCommandAndPredicate("multiple of", (num, multiple) -> num % multiple == 0);
     }
 
     public static void main(String[] args) {
@@ -71,6 +71,15 @@ public class IntegerListFilter extends ListFilter<Integer> {
     @Override
     boolean isPredicate(String command) {
         return command.split(" ").length < 3;
+    }
+
+
+    void registerCommandAndPredicate(String command, Predicate<Integer> predicate) {
+        registerPredicate(command, predicate);
+    }
+
+    void registerCommandAndPredicate(String command, BiPredicate<Integer, Integer> predicate) {
+        registerBiPredicate(command, predicate);
     }
 
     public List<Integer> filter(List<Integer> list, Predicate<Integer> predicate) {

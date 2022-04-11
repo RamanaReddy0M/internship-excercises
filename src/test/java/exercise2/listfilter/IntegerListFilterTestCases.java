@@ -44,7 +44,7 @@ public class IntegerListFilterTestCases {
 
         IntegerListFilter listFilter = new IntegerListFilter();
         //test case for plugin less than command
-        listFilter.registerBiPredicate("less than", (number, less) -> number < less);
+        listFilter.registerCommandAndPredicate("less than", (number, less) -> number < less);
 
         List<Integer> testList3 = new ArrayList<>(Arrays.asList(1, 2, 3, 32, 7, 97, 5, 93, 2));
         List<String> testConditions3 = new ArrayList<>(Arrays.asList("prime", "less than 50"));
