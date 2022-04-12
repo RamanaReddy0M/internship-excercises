@@ -1,36 +1,11 @@
 package exercise2.listfilter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class IntegerListFilter extends ListFilter<Integer> {
-
-    public IntegerListFilter() {
-        //even, odd, prime and odd requires single param to implement
-        registerCommandAndPredicate("even", integer -> integer % 2 == 0);
-        registerCommandAndPredicate("odd", predicateMap.get("even").negate());
-        registerCommandAndPredicate("prime", num -> {
-            if (num <= 1) return false;
-            if (num == 2) return true;
-            for (int i = 2; i <= num / 2; i++)
-                if (num % i == 0) return false;
-            return true;
-        });
-        registerCommandAndPredicate("odd prime", predicateMap.get("odd").and(predicateMap.get("prime")));
-        //multiple of, greater than and less than requires 2 params to implement
-        registerCommandAndPredicate("greater than", (num, greater) -> num > greater);
-        registerCommandAndPredicate("multiple of", (num, multiple) -> num % multiple == 0);
-    }
-
-    public static void main(String[] args) {
-        List<Integer> testList1 = new ArrayList<>(Arrays.asList(1, 2, 3, 32, 7, 97, 5, 93, 2));
-        IntegerListFilter listFilter = new IntegerListFilter();
-        listFilter.withAllCommands(testList1, Arrays.asList("even", "greater than 2")).forEach(System.out::println);
-    }
 
     @Override
     List<Integer> withAllCommands(List<Integer> list, List<String> commands) {
@@ -67,18 +42,19 @@ public class IntegerListFilter extends ListFilter<Integer> {
         return predicate;
     }
 
-
     @Override
     boolean isPredicate(String command) {
         return command.split(" ").length < 3;
     }
 
-
-    void registerCommandAndPredicate(String command, Predicate<Integer> predicate) {
+    //following two methods are responsible for providing generic name for registering command
+    // and predicate(or BiPredicate).
+    public void registerCommandAndPredicate(String command, Predicate<Integer> predicate) {
         registerPredicate(command, predicate);
     }
 
-    void registerCommandAndPredicate(String command, BiPredicate<Integer, Integer> predicate) {
+    //overloading
+    public void registerCommandAndPredicate(String command, BiPredicate<Integer, Integer> predicate) {
         registerBiPredicate(command, predicate);
     }
 

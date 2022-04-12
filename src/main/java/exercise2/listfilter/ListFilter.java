@@ -26,5 +26,13 @@ public abstract class ListFilter<T> {
     abstract Predicate<T> constructPredicate(List<String> commands, PredicateChainType chainType);
 
     abstract boolean isPredicate(String command);
+
+    public Map<String, Predicate<T>> getPredicateMap(){
+        return predicateMap;
+    }
+
+    public Map<String, BiPredicate<T, T>> getBiPredicateMap(){
+        return biPredicateMap;
+    }
 }
 

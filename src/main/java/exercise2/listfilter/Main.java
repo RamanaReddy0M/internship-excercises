@@ -6,9 +6,27 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    static IntegerListFilter listFilter = new IntegerListFilter();
+
+    static {
+        //even, odd, prime and odd requires single param to implement
+        listFilter.registerCommandAndPredicate("even", integer -> integer % 2 == 0);
+        listFilter.registerCommandAndPredicate("odd", listFilter.getPredicateMap().get("even").negate());
+        listFilter.registerCommandAndPredicate("prime", num -> {
+            if (num <= 1) return false;
+            if (num == 2) return true;
+            for (int i = 2; i <= num / 2; i++)
+                if (num % i == 0) return false;
+            return true;
+        });
+        listFilter.registerCommandAndPredicate("odd prime", listFilter.getPredicateMap().get("odd").and(listFilter.getPredicateMap().get("prime")));
+        //multiple of, greater than and less than requires 2 params to implement
+        listFilter.registerCommandAndPredicate("greater than", (num, greater) -> num > greater);
+        listFilter.registerCommandAndPredicate("multiple of", (num, multiple) -> num % multiple == 0);
+    }
+
     public static void main(String[] args) {
         //plugin less than command
-        IntegerListFilter listFilter = new IntegerListFilter();
         listFilter.registerCommandAndPredicate("less than", (integer, less) -> integer < less);
         //-------------------------------
         Scanner scanner = new Scanner(System.in);
