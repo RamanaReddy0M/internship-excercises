@@ -1,26 +1,17 @@
 package exercise3.in.file.utils;
 
 import org.junit.Test;
-import org.mockito.MockedStatic;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mockStatic;
 
-public class TestCasesForFileReader {
-
-    @Test
-    public void testForRecursiveFileSearch() {
-        MockedStatic<Reader> fileReaderMock = mockStatic(Reader.class);
-        //FileReader.recursiveFileSearch(..) doesn't return anything(void).
-        fileReaderMock.when(() -> Reader.recursiveFileSearch("pub", "src")).then((Answer<Void>) invocationOnMock -> null);
-    }
+public class TestCasesForReader {
 
     @Test
     public void testForReadFromFile() {
@@ -28,11 +19,16 @@ public class TestCasesForFileReader {
         //Content of file where key will be searched.
         String fileContent = "<xmlVersionxml@#xml^^^XMl> </xmlVersion&Xml>\nolder VMs the conversion";
         if (!FileWriter.write(fileContent, tempSource.toString())) fail();
-        List<String> lines = Reader.readFromFile(tempSource.toString());
-        assertFalse(lines.isEmpty());
+
+        //test 1
+        List<String> expectedLines = Arrays.stream(fileContent.split("\n")).toList();
+        List<String> actualLines = Reader.readFromFile(tempSource.toString());
+        assertArrayEquals(expectedLines.toArray(), actualLines.toArray());
+
+        //test 2
         //Here, it prints(not throws) exception if it triggers any IOException.
-        lines = Reader.readFromFile("/data.txt");
-        assertTrue(lines.isEmpty());
+        actualLines = Reader.readFromFile("/data.txt");
+        assertTrue(actualLines.isEmpty());
 
         //deleting created temporary source
         try {

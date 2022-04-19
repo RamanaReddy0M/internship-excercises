@@ -3,7 +3,10 @@ package exercise3.in.file.utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class FileSearch {
     private int after;
@@ -32,6 +35,44 @@ public class FileSearch {
         this.caseSensitive = caseSensitive;
         this.after = after;
         this.before = before;
+    }
+
+    public void setAfter(int after) {
+        this.after = after;
+    }
+
+    public void setBefore(int before) {
+        this.before = before;
+    }
+
+    public void setCaseSensitive(boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
+
+    public void setOutputForFile(boolean outputForFile) {
+        this.outputForFile = outputForFile;
+    }
+
+    public String search(String key, Path source){
+        if(source.toFile().isFile())
+            return search(key, source.toString());
+        else if(source.toFile().isDirectory())
+            searchFromDirectory(key, source.toString());
+        return "";
+    }
+
+    public void searchFromDirectory(String key, String directory) {
+        File source = new File(directory);
+        FileSearch fileSearch = new FileSearch();
+        try (Stream<Path> pathStream = Files.walk(source.toPath())) {
+            pathStream.filter(path -> path.toFile().isFile())
+                    .map(path -> {
+                        return Color.ANSI_CYAN + path + ":" + Color.ANSI_RESET + fileSearch.search(key, path);
+                    }).forEach(System.out::println);
+        } catch (IOException e) {
+            System.out.println(Color.ANSI_RED + exceptionParser(e.toString()));
+        }
+
     }
 
     public String search(String key, String fileName)  {
@@ -116,24 +157,15 @@ public class FileSearch {
         return result.toString();
     }
 
-    public void setAfter(int after) {
-        this.after = after;
-    }
-
-    public void setBefore(int before) {
-        this.before = before;
-    }
-
-    public void setCaseSensitive(boolean caseSensitive) {
-        this.caseSensitive = caseSensitive;
-    }
-
-    public void setOutputForFile(boolean outputForFile) {
-        this.outputForFile = outputForFile;
-    }
-
     private void removeLastCharacter(StringBuilder result, String lastCharacter){
         int index = result.lastIndexOf(lastCharacter);
         if (index > 0) result.delete(index, result.length());
+    }
+    /*
+     * example: java.nio.file.NoSuchFileException:
+     * This function will remove java.nio.file and returns NoSuchFileException:...
+     * */
+    private static String exceptionParser(String ex) {
+        return Arrays.stream(ex.split("\\.")).skip(3).reduce("", (a, b) -> a + " " + b);
     }
 }

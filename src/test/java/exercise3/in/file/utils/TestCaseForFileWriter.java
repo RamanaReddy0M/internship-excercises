@@ -12,11 +12,12 @@ public class TestCaseForFileWriter {
 
     @Test
     public void testForWriteMethod() {
-
+        //test 1
         boolean isWritten = FileWriter.write("The content in file,\n I'm going to be deleted.", "out.txt");
         assertTrue(isWritten);
 
-        //attempt to create file at root level, probably throws AccessDeniedException
+        //test 2
+        //attempt to create file at root level, probably throws AccessDeniedException.
         isWritten = FileWriter.write("The content in file,\n I'm going to be deleted.", "/out.txt");
         assertFalse(isWritten);
 

@@ -37,19 +37,23 @@ public class Grep {
                 printHelp();
                 return;
             }
+
             int searchStringIndex = getSearchStringIndex(args);
             String key = args[searchStringIndex];
+
             //following three if statements construct fileSearch object by option -i, -A, -B
             if (commandLine.hasOption(caseInSensitive.getOpt())) fileSearch.setCaseSensitive(false);
             if (commandLine.hasOption(afterLine.getOpt()))
                 fileSearch.setAfter(Integer.parseInt(commandLine.getOptionValue(afterLine.getOpt())));
             if (commandLine.hasOption(beforeLine.getOpt()))
                 fileSearch.setBefore(Integer.parseInt(commandLine.getOptionValue(beforeLine.getOpt())));
+
             //If there's no input after search-string then (source) read from user(STDIN).
             if ((searchStringIndex + 1) == args.length) {
                 display(fileSearch.search(key, Reader.readFromSTDIN()));
                 return;
             }
+
             //after search string there could be a file or directory.
             if ((searchStringIndex + 1) < args.length) {
                 String fileOrDirectory = args[searchStringIndex + 1];
@@ -75,7 +79,7 @@ public class Grep {
                         }
                     }
                 } else if (isDirectory(fileOrDirectory)) {
-                    if ((searchStringIndex + 2) == args.length) Reader.recursiveFileSearch(key, fileOrDirectory);
+                    if ((searchStringIndex + 2) == args.length) fileSearch.searchFromDirectory(key, fileOrDirectory);
                 }
             }
         } catch (Exception e) {
