@@ -1,0 +1,2 @@
+[36msrc/main/resources/data.txt:[0m<xmlVersion> </Xml[31mversion[0m>
+Greenwich Mean Time. However, in older VMs the con[31mversion[0m between this long

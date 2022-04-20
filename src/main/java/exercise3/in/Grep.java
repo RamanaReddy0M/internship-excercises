@@ -10,6 +10,7 @@ import java.io.File;
 
 
 public class Grep {
+
     static FileSearch fileSearch = new FileSearch();
     static Options options = new Options();
     static Option caseInSensitive = new Option("i", null, false, "-i -> Case-insensitive.");
@@ -79,7 +80,14 @@ public class Grep {
                         }
                     }
                 } else if (isDirectory(fileOrDirectory)) {
-                    if ((searchStringIndex + 2) == args.length) fileSearch.searchFromDirectory(key, fileOrDirectory);
+                    if ((searchStringIndex + 2) == args.length){
+                        StringBuilder result = new StringBuilder();
+                        fileSearch.searchFromDirectory(key, fileOrDirectory).forEach((path, matchesOfFile) -> {
+                            result.append(path).append(matchesOfFile).append("\n");
+                            System.out.print(path + matchesOfFile + "\n");
+                        });
+                        FileWriter.write(result.toString(), "src/main/directorySearchResults.txt");
+                    }
                 }
             }
         } catch (Exception e) {

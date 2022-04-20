@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class FileSearch {
@@ -61,18 +63,19 @@ public class FileSearch {
         return "";
     }
 
-    public void searchFromDirectory(String key, String directory) {
+    public Map<String, String> searchFromDirectory(String key, String directory) {
         File source = new File(directory);
+        Map<String, String> fileMatches = new LinkedHashMap<>();
         FileSearch fileSearch = new FileSearch();
         try (Stream<Path> pathStream = Files.walk(source.toPath())) {
             pathStream.filter(path -> path.toFile().isFile())
-                    .map(path -> {
-                        return Color.ANSI_CYAN + path + ":" + Color.ANSI_RESET + fileSearch.search(key, path);
-                    }).forEach(System.out::println);
+                    .forEach(path -> {
+                        fileMatches.put(Color.ANSI_CYAN + path + ":", Color.ANSI_RESET + fileSearch.search(key, path));
+                    });
         } catch (IOException e) {
-            System.out.println(Color.ANSI_RED + exceptionParser(e.toString()));
+            System.out.println(Color.ANSI_RED + "Error! " + e.getMessage());
         }
-
+        return fileMatches ;
     }
 
     public String search(String key, String fileName)  {

@@ -2,9 +2,6 @@ package exercise3.in.file.utils;
 
 
 import org.junit.Test;
-import org.mockito.exceptions.base.MockitoAssertionError;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.VerificationCollector;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,11 +9,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class TestCasesForFileSearch {
 
@@ -90,25 +89,19 @@ public class TestCasesForFileSearch {
 
     @Test
     public void testCaseForSearchingFromDirectory() {
-        // fileSearch.searchFromDirectory("pub", "src");
 
         /*
          * Story 4 - Ability to search for a string recursively in any of the files in a given directory.
          * */
-        VerificationCollector collector = MockitoJUnit.collector()
-                .assertLazily();
+        List<String> expectedLines = Reader.readFromFile("src/main/directorySearchResults.txt");
 
-        FileSearch fileSearch1 = mock(FileSearch.class);
-        verify(fileSearch1).searchFromDirectory("pub", "src");
+        List<String> actualLines = new ArrayList<>();
+        Map<String, String> matchesInfile = fileSearch.searchFromDirectory("version", "src/main/resources");
+        matchesInfile.forEach((path, matchesOfFile) -> {
+            Collections.addAll(actualLines, (path + matchesOfFile).split("\n"));
+        });
 
-        try {
-            collector.collectAndReport();
-        } catch (MockitoAssertionError error) {
-            assertTrue(error.getMessage()
-                    .contains("1. Wanted but not invoked:"));
-
-        }
-
+        assertEquals(expectedLines, actualLines);
     }
 
 }
