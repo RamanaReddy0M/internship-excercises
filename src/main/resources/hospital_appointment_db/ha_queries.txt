@@ -1,0 +1,6 @@
+
+-- get all users acts as Receptionist
+SELECT * FROM users u
+ WHERE u.id in (SELECT user_id FROM users_roles
+				  WHERE role_id = (SELECT id FROM roles r
+								   	WHERE role = 'Receptionist'));
