@@ -1,8 +1,69 @@
 
 -- get all users acts as Receptionist
-SELECT * FROM users u
- WHERE u.id in (SELECT user_id FROM users_roles
-				  WHERE role_id = (SELECT id FROM roles r
-								   	WHERE role = 'Receptionist'));
+    SELECT * FROM users u
+     WHERE u.id in (SELECT user_id FROM users_roles
+                      WHERE role_id = (SELECT id FROM roles r
+                                        WHERE role = 'Receptionist'));
 
---
+                                -- (or)
+    SELECT * FROM users	u
+           JOIN receptionists r ON u.id = r.user_id;
+
+-- Patient
+
+ -- List all specialisation names
+ 	SELECT name From specialisations;
+
+  -- List all doctor names for particular specification
+     SELECT u.name as dr_name FROM doctors d
+ 	 JOIN users u on d.user_id = u.id
+ 	 JOIN doctors_specialisations ds ON d.id = ds.doctor_id
+ 	 JOIN specialisations s ON  ds.specialisation_id = s.id
+ 	 WHERE s.id = (SELECT id FROM specialisations s1 WHERE s1.name = 'Ophthalmologist')
+ 	 ORDER BY dr_name;
+
+  -- Given patient id,  list all of my past appointments
+     SELECT * FROM appointments
+ 		WHERE patient_id = 13 AND DATE(requested_at) < CURRENT_DATE;
+
+  -- Given a patient id, list down my active appointment, if any. Upcomining appointments
+      SELECT * FROM appointments
+ 		WHERE patient_id = 2 AND DATE(requested_at) >= CURRENT_DATE;
+
+-- Receptionist
+
+    -- View today's appointment for particular doctor,
+       SELECT * FROM appointments
+          WHERE DATE(reporting_time) = CURRENT_DATE AND doctor_id = 1;
+
+    -- View appointments for a particular doctor given a specific date, let date = '2022-04-06', dr_id = 1
+        SELECT * FROM appointments
+            WHERE DATE(reporting_time) = '2022-04-06' AND doctor_id = 1 AND status_id = 5;
+
+    -- View all appointments for a particular reason for a given date, let date = '2022-04-05', reason_id = 2
+        SELECT * FROM appointments
+            WHERE reason_id = 2 AND DATE(reporting_time) = '2022-04-05';
+
+
+-- Hospital staff/analytics use case
+
+  -- Query to print (id, dr_name, visited patient count, rejected patient count) for a given date, let date = '2022-04-05'
+     SELECT u.name as dr_name,
+ 	       SUM(CASE WHEN status_id = 5 THEN 1 ELSE 0 END) as "Visited Patients Count",
+ 	       SUM(CASE WHEN status_id = 4 THEN 1 ELSE 0 END) as "Cancelled Patients Count"
+ 	 FROM appointments ap
+ 	 JOIN doctors d ON ap.doctor_id = d.id
+ 	 JOIN users u ON d.user_id = u.id
+ 	 WHERE DATE(reporting_time) = '2022-04-05'
+ 	 GROUP BY doctor_id, dr_name
+ 	 ORDER BY dr_name;
+
+  -- Find the famous doctor for particular specification.
+     SELECT u.name as dr_name, d.experience, d.qualification
+ 	 FROM appointments ap
+ 	 JOIN doctors d ON ap.doctor_id = d.id
+ 	 JOIN users u ON d.user_id = u.id
+ 	 WHERE doctor_id IN (SELECT doctor_id FROM doctors_specialisations
+ 						        WHERE specialisation_id = 4)
+ 	 GROUP BY doctor_id, dr_name, d.experience, d.qualification
+ 	 ORDER BY COUNT(doctor_id) DESC LIMIT(1);
